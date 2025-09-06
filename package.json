@@ -1,0 +1,31 @@
+{
+  "name": "nest-datastar",
+  "version": "0.0.1",
+  "description": "A NestJS module for integrating Datastar into your applications.",
+  "author": "Audrius Raibis",
+  "private": false,
+  "license": "MIT",
+  "url": "https://github.com/raibis/nest-datastar#readme",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rimraf -rf dist && tsc -p tsconfig.json",
+    "format": "prettier --write \"{lib,test}/**/*.ts\"",
+    "lint": "eslint 'lib/**/*.ts' --fix",
+    "prepublish:npm": "npm run build"
+  },
+  "dependencies": {
+    "chokidar": "^4.0.3",
+    "glob": "^11.0.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "typescript": "^5.7.3"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^10.0.0 || ^11.0.0"
+  }
+}
