@@ -1,4 +1,4 @@
-# Nest Datastar
+# NestJS Datastar
 
 <p align="center" font-size="200px">
 <img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" />

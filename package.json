@@ -1,11 +1,11 @@
 {
-  "name": "nest-datastar",
+  "name": "nestjs-datastar",
   "version": "0.0.1",
   "description": "A NestJS module for integrating Datastar into your applications.",
   "author": "Audrius Raibis",
   "private": false,
   "license": "MIT",
-  "url": "https://github.com/raibis/nest-datastar#readme",
+  "url": "https://github.com/raibis/nestjs-datastar#readme",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
