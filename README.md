@@ -12,5 +12,5 @@ A NestJS module for integrating Datastar into your applications.
 ## Installation
 
 ```bash
-$ npm i --save @raibis/nest-datastar
+npm i nestjs-datastar
 ```
