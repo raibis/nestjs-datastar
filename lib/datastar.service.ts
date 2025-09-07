@@ -65,7 +65,7 @@ export class DatastarService {
     @Inject('DATASTAR_OPTIONS') private options: DatastarModuleOptions,
   ) {}
 
-  async onModuleInit(): Promise<void> {
+  private async onModuleInit(): Promise<void> {
     await this.loadEngine();
     this.loadTemplates();
 
@@ -156,7 +156,7 @@ export class DatastarService {
     this.fileCache.set(filePath, key);
   }
 
-  public render(templateName: string, context: Record<string, any>): string {
+  private render(templateName: string, context: Record<string, any>): string {
     if (!this.renderer) {
       throw new Error('Template renderer not initialized');
     }
