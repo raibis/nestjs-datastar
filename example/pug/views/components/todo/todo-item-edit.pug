@@ -1,13 +1,15 @@
-input(
-    id="edit-todo"
-    type="text"
-    data-signals-input=`'${todo.title}'`
-    data-bind="input"
-    data-on-load="el.focus()"
-    data-on-blur="@put('cancel')"
-    data-on-keydown=`if (evt.key === 'Escape'){
-            el.blur();
-        } else if (evt.key === 'Enter' && $input.trim()) {
-            @patch('update/${index}');
-        }`
-)
+.tooltip.tooltip-right.w-full(data-tip="Press Enter to save, Escape to cancel")
+    input(
+        id="edit-todo"
+        class="input input-bordered w-full"
+        type="text"
+        data-signals-input=`'${todo.title}'`
+        data-bind="input"
+        data-on-load="el.focus()"
+        data-on-blur="@put('cancel')"
+        data-on-keydown=`if (evt.key === 'Escape'){
+                el.blur();
+            } else if (evt.key === 'Enter' && $input.trim()) {
+                @patch('update/${index}');
+            }`
+    )

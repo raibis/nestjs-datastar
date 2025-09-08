@@ -1,15 +1,15 @@
-.flex.items-center.gap-2
-    input(
-        id=`todo-checkbox-${index}`
-        type="checkbox" 
-        class="checkbox checkbox-primary" 
-        data-on-load=`el.checked = ${todo.completed}`
-        data-on-click__prevent=`@post('toggle/${index}')`
-        )
-    label(
-        for=`todo-checkbox-${index}`
-        class="cursor-pointer"
-    )= todo.title
+input(
+    id=`todo-checkbox-${index}`
+    type="checkbox" 
+    class="checkbox checkbox-primary" 
+    data-on-load=`el.checked = ${todo.completed}`
+    data-on-click__prevent=`@post('toggle/${index}')`
+)
+label(
+    for=`todo-checkbox-${index}`
+    class="cursor-pointer  flex-1"
+    data-on-dblclick=`evt.target === el && @get('todo/${index}')`
+)= todo.title
 button.btn.btn-xs.btn-error(
     data-on-click=`@delete("/todo/${index}")`
 ) Delete #{edit}

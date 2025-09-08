@@ -18,21 +18,20 @@
           placeholder="What needs to be done?"
         )
       else
-        input(
-          id="new-todo"
-          class="input input-bordered w-full"
-          type="text"
-          placeholder="What needs to be done?"
-          data-signals-input=""
-          data-bind="input"
-          data-on-keydown="evt.key === 'Enter' && $input.trim() && @patch('update/-1') && ($input = '');"
-        )
+        .tooltip.tooltip-right.w-full(data-tip="Press Enter to create")
+          input(
+            id="new-todo"
+            class="input input-bordered w-full"
+            type="text"
+            placeholder="What needs to be done?"
+            data-signals-input=""
+            data-bind="input"
+            data-on-keydown="evt.key === 'Enter' && $input.trim() && @patch('update/-1') && ($input = '');"
+          )
     // Todo List
     ul#todo-list.divide-y.divide-base-300.mt-4
     each todo, index in todos || []
-      li.flex.items-center.justify-between.py-2(
-        data-on-dblclick=`evt.target === el && @get('todo/${index}')`
-      )
+      li.flex.items-center.gap-2.py-2.tooltip.tooltip-right(data-tip="Double click to edit")
         if edit === index
           include ./todo-item-edit
         else
