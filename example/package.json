@@ -23,7 +23,7 @@
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.1.6",
-    "nestjs-datastar": "file:../../",
+    "nestjs-datastar": "file:../",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },

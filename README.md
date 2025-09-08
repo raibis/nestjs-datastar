@@ -9,8 +9,11 @@
 
 A NestJS module for integrating Datastar into your applications.
 
+Supports PUG templating engine.
+
 ## Installation
 
 ```bash
 npm i nestjs-datastar
+npm i pug
 ```

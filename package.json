@@ -1,6 +1,6 @@
 {
   "name": "nestjs-datastar",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A NestJS module for integrating Datastar into your applications.",
   "author": "Audrius Raibis",
   "private": false,
@@ -22,18 +22,17 @@
     "glob": "^11.0.3"
   },
   "devDependencies": {
-    "@eslint/js": "9.34.0",
+    "@eslint/js": "9.35.0",
     "@types/express": "^5.0.0",
-    "eslint": "9.34.0",
+    "eslint": "9.35.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-prettier": "5.5.4",
     "globals": "16.3.0",
-    "hbs": "^4.2.0",
     "prettier": "3.6.2",
     "pug": "^3.0.3",
     "rimraf": "6.0.1",
     "typescript": "5.9.2",
-    "typescript-eslint": "8.41.0"
+    "typescript-eslint": "8.43.0"
   },
   "peerDependencies": {
     "@nestjs/common": "^10.0.0 || ^11.0.0"

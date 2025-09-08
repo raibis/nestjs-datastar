@@ -1,6 +1,5 @@
-import { Inject, Injectable, MessageEvent } from '@nestjs/common';
+import { Inject, Injectable, MessageEvent, Logger } from '@nestjs/common';
 import { DatastarModuleOptions } from './datastar.module';
-import * as fs from 'fs';
 import * as path from 'path';
 import { glob } from 'glob';
 import * as chokidar from 'chokidar';
@@ -23,58 +22,30 @@ import {
   DefaultSseRetryDurationMs,
   ElementPatchModes,
 } from './datastar.constant';
+import { Console } from 'console';
 
-export type ViewEngine = 'pug' | 'handlebars' | 'hbs';
+export type ViewEngine = 'pug';
 
-export type ViewEngineModules = PugLike | HandlebarsLike;
+export type ViewEngineModules = PugLike;
 
 export interface TemplateRenderer {
-  compile(
-    template: string,
-    options?: Record<string, any>,
-  ): (context: Record<string, unknown>) => string;
   compileFile(path: string): (context: Record<string, unknown>) => string;
 }
 
 interface PugLike {
-  compile(
-    template: string,
-    options?: Record<string, any>,
-  ): (context: Record<string, any>) => string;
-  compileFile(path: string): (context: Record<string, unknown>) => string;
+  compileFile(filePath: string): (context: Record<string, unknown>) => string;
 }
 
 export class PugRenderer implements TemplateRenderer {
   constructor(private pug: PugLike) {}
-  compile(template: string, options?: Record<string, any>) {
-    return this.pug.compile(template, options);
-  }
-  compileFile(path: string) {
-    return this.pug.compileFile(path);
-  }
-}
-
-interface HandlebarsLike {
-  compile(
-    template: string,
-    options?: Record<string, any>,
-  ): (context: Record<string, any>) => string;
-  compileFile(path: string): (context: Record<string, unknown>) => string;
-}
-
-export class HandlebarsRenderer implements TemplateRenderer {
-  constructor(private hbs: HandlebarsLike) {}
-  compile(template: string, options?: Record<string, any>) {
-    return this.hbs.compile(template, options);
-  }
-  compileFile(path: string) {
-    const template = fs.readFileSync(path, 'utf-8');
-    return this.hbs.compile(template);
+  compileFile(filePath: string) {
+    return this.pug.compileFile(filePath);
   }
 }
 
 @Injectable()
 export class DatastarService {
+  private readonly logger = new Logger(DatastarService.name);
   private renderer: TemplateRenderer | null = null;
   private templateCache: Map<string, (context: Record<string, any>) => string> =
     new Map();
@@ -84,14 +55,14 @@ export class DatastarService {
     @Inject('DATASTAR_OPTIONS') private options: DatastarModuleOptions,
   ) {}
 
-  private async onModuleInit(): Promise<void> {
+  public async onModuleInit(): Promise<void> {
     await this.loadEngine();
     this.loadTemplates();
-
     if (this.options.isDevelopment) {
       this.watchTemplates();
     }
   }
+
   private async loadEngine(): Promise<void> {
     try {
       const mod = (await import(this.options.viewEngine)) as ViewEngineModules;
@@ -99,42 +70,50 @@ export class DatastarService {
         case 'pug':
           this.renderer = new PugRenderer(mod);
           break;
-        case 'handlebars':
-        case 'hbs':
-          this.renderer = new HandlebarsRenderer(mod);
-          break;
         default:
           throw new Error(`Unsupported template engine`);
       }
-    } catch {
-      throw new Error(
-        `View engine "${this.options.viewEngine}" not found. Install it with "npm install ${this.options.viewEngine}".`,
-      );
+    } catch (err: any) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (err?.code === 'MODULE_NOT_FOUND') {
+        throw new Error(
+          `View engine ${this.options.viewEngine} not found. Install it via npm.`,
+        );
+      }
+      throw err;
     }
   }
 
-  private loadTemplates(): void {
+  private loadTemplates(): boolean {
     if (!this.renderer) {
       throw new Error('Renderer not initialized');
     }
-    const pattern = path.resolve(process.cwd(), this.options.baseViewDir);
+    const cwd = process.cwd();
+    const pattern = path.resolve(cwd, this.options.baseViewDir);
     const files = glob.sync(pattern);
-    const root = path.resolve(
-      process.cwd(),
-      this.options.baseViewDir.split('/**')[0],
-    );
-    files.forEach((filePath) => {
+    const root = path.resolve(cwd, this.options.baseViewDir.split('/**')[0]);
+    for (const filePath of files) {
       const rel = path.relative(root, filePath);
       const key = rel.replace(path.extname(rel), '');
-      //const templateContent = fs.readFileSync(filePath, 'utf-8');
-      // const compiledFn = this.renderer!.compile(templateContent, {
-      //   filename: key,
-      //   basedir: root,
-      // });
-      const compiledFn = this.renderer!.compileFile(filePath);
+      const compiledFn = this.renderer.compileFile(filePath);
       this.templateCache.set(key, compiledFn);
       this.fileCache.set(filePath, key);
-    });
+      this.logger.debug(`Template loaded: ${key}`);
+    }
+    return true;
+  }
+
+  private compileTemplateDevelopment(
+    filePath: string,
+  ): undefined | ((context: Record<string, unknown>) => string) {
+    try {
+      if (!this.renderer) {
+        return;
+      }
+      return this.renderer.compileFile(filePath);
+    } catch (err) {
+      this.logger.error(`Template: ${err}`);
+    }
   }
 
   private watchTemplates(): void {
@@ -163,26 +142,22 @@ export class DatastarService {
   }
 
   private compileAndUpdate(filePath: string): void {
-    if (!this.renderer) return;
-
-    const templateContent = fs.readFileSync(filePath, 'utf-8');
-    const compiledFn = this.renderer.compile(templateContent);
-
+    const compiledFn = this.compileTemplateDevelopment(filePath);
+    if (!compiledFn) {
+      return;
+    }
     const root = path.resolve(
       process.cwd(),
       this.options.baseViewDir.split('/**')[0],
     );
     const rel = path.relative(root, filePath);
     const key = rel.replace(path.extname(rel), '');
-
     this.templateCache.set(key, compiledFn);
     this.fileCache.set(filePath, key);
+    this.logger.debug(`Template updated: ${key}`);
   }
 
   private render(templateName: string, context: Record<string, any>): string {
-    if (!this.renderer) {
-      throw new Error('Template renderer not initialized');
-    }
     const compiledFn = this.templateCache.get(templateName);
     if (!compiledFn) {
       throw new Error(
