@@ -10,7 +10,7 @@
         class="checkbox checkbox-primary"
         data-on-click__prevent="@post('toggle/-1')"
       )
-      if edit 
+      if edit >= 0 
         input(
           id="new-todo"
           class="input input-bordered w-full"
@@ -41,11 +41,9 @@
     // Footer Actions
     .flex.items-center.justify-between.mt-4
       span.text-sm
-        strong 0
+        strong #{pendingCount || 0}
         |  items pending
       .flex.gap-2
-        button.btn.btn-sm.btn-info(data-on-click="@put('/examples/todomvc/mode/0')") All
-        button.btn.btn-sm(data-on-click="@put('/examples/todomvc/mode/1')") Pending
-        button.btn.btn-sm(data-on-click="@put('/examples/todomvc/mode/2')") Completed
-        button.btn.btn-sm.btn-error(aria-disabled="true") Delete
-        button.btn.btn-sm.btn-warning(data-on-click="@put('/examples/todomvc/reset')") Reset
+        button.btn.btn-sm.btn-info(data-on-click="@put('mode/0')") All
+        button.btn.btn-sm(data-on-click="@put('mode/1')") Pending
+        button.btn.btn-sm(data-on-click="@put('mode/2')") Completed

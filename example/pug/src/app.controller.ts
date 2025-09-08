@@ -16,19 +16,35 @@ import { GetDS, SignalsDS, DatastarService } from 'nestjs-datastar';
 @Controller()
 export class AppController {
   private updates$ = new Subject<MessageEvent>();
-
-  private readonly todos = [
+  private edit: number | undefined = undefined;
+  private mode = 0; // 0: all, 1: active, 2: completed
+  private todos = [
     { title: 'Learn NestJS', completed: false },
     { title: 'Learn Datastar', completed: false },
     { title: 'Build a Todo App', completed: false },
   ];
-  constructor(private readonly DS: DatastarService) {}
 
-  updateTodos(edit?: number) {
-    return this.DS.patchElementsTemplate('components/todo/todo', {
-      todos: this.todos,
-      edit,
+  constructor(private readonly dataStarService: DatastarService) {}
+
+  filteredTodos() {
+    if (this.mode === 1) {
+      return this.todos.filter((todo) => !todo.completed);
+    } else if (this.mode === 2) {
+      return this.todos.filter((todo) => todo.completed);
+    }
+    return this.todos;
+  }
+
+  updateTodos() {
+    return this.dataStarService.patchElementsTemplate('components/todo/todo', {
+      todos: this.filteredTodos(),
+      edit: this.edit,
+      pendingCount: this.pendingCount(),
     });
+  }
+
+  pendingCount() {
+    return this.todos.filter((todo) => !todo.completed).length;
   }
 
   @Get()
@@ -76,12 +92,21 @@ export class AppController {
   @Get('todo/:index')
   @HttpCode(204)
   editTodo(@Param('index') index: string): void {
-    this.updates$.next(this.updateTodos(Number(index)));
+    this.edit = parseInt(index, 10);
+    this.updates$.next(this.updateTodos());
   }
 
   @Put('cancel')
   @HttpCode(204)
   cancelEdit(): void {
+    this.edit = undefined;
+    this.updates$.next(this.updateTodos());
+  }
+
+  @Put('mode/:mode')
+  @HttpCode(204)
+  setMode(@Param('mode') mode: string): void {
+    this.mode = parseInt(mode, 10);
     this.updates$.next(this.updateTodos());
   }
 }
