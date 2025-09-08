@@ -1,16 +1,21 @@
-import { Controller, Get, MessageEvent, Render, Param } from '@nestjs/common';
-import { Observable, from } from 'rxjs';
 import {
-  GetDS,
-  DeleteDS,
-  PostDS,
-  PatchDS,
-  SignalsDS,
-  DatastarService,
-} from 'nestjs-datastar';
+  Controller,
+  Get,
+  MessageEvent,
+  Render,
+  Param,
+  HttpCode,
+  Delete,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import { Observable, Subject, startWith } from 'rxjs';
+import { GetDS, SignalsDS, DatastarService } from 'nestjs-datastar';
 
 @Controller()
 export class AppController {
+  private updates$ = new Subject<MessageEvent>();
+
   private readonly todos = [
     { title: 'Learn NestJS', completed: false },
     { title: 'Learn Datastar', completed: false },
@@ -18,49 +23,55 @@ export class AppController {
   ];
   constructor(private readonly DS: DatastarService) {}
 
-  updateTodos() {
-    return from([
-      this.DS.patchElementsTemplate('todos', { todos: this.todos }),
-    ]);
+  updateTodos(edit?: number) {
+    return this.DS.patchElementsTemplate('todos', { todos: this.todos, edit });
   }
 
   @Get()
   @Render('index')
   index() {}
 
-  @GetDS('todos')
+  @GetDS('updates')
   getTodos(): Observable<MessageEvent> {
-    return this.updateTodos();
+    return this.updates$.pipe(startWith(this.updateTodos()));
   }
 
-  @PatchDS('update/:index')
+  @Patch('update/:index')
+  @HttpCode(204)
   updateTodo(
     @Param('index') index: number,
     @SignalsDS() signals: Record<string, any>,
-  ): Observable<MessageEvent> {
+  ): void {
     if (index < 0) {
       this.todos.push({ title: String(signals?.input), completed: false });
     } else {
       this.todos[index] = { title: String(signals?.input), completed: false };
     }
-    return this.updateTodos();
+    this.updates$.next(this.updateTodos());
   }
 
-  @DeleteDS('todo/:index')
-  deleteTodo(@Param('index') index: number): Observable<MessageEvent> {
+  @Delete('todo/:index')
+  @HttpCode(204)
+  deleteTodo(@Param('index') index: number): void {
     this.todos.splice(index, 1);
-    return this.updateTodos();
+    this.updates$.next(this.updateTodos());
   }
 
-  @PostDS('toggle/:index')
-  toggleTodo(@Param('index') index: number): Observable<MessageEvent> {
+  @Post('toggle/:index')
+  @HttpCode(204)
+  toggleTodo(@Param('index') index: number): void {
     if (index < 0) {
       const allCompleted = this.todos.every((todo) => todo.completed);
       this.todos.forEach((todo) => (todo.completed = !allCompleted));
-      return this.updateTodos();
     } else {
       this.todos[index].completed = !this.todos[index].completed;
     }
-    return this.updateTodos();
+    this.updates$.next(this.updateTodos());
+  }
+
+  @Get('todo/:index')
+  @HttpCode(204)
+  editTodo(@Param('index') index: string): void {
+    this.updates$.next(this.updateTodos(Number(index)));
   }
 }

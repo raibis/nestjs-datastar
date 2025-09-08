@@ -3,18 +3,7 @@ ul#todo-list.divide-y.divide-base-300.mt-4
     li.flex.items-center.justify-between.py-2(
       data-on-dblclick=`evt.target === el && @get('todo/${index}')`
     )
-      .flex.items-center.gap-2
-        input(
-          id=`todo-checkbox-${index}`
-          type="checkbox" 
-          class="checkbox checkbox-primary" 
-          data-on-load=`el.checked = ${todo.completed}`
-          data-on-click__prevent=`@post('toggle/${index}')`
-        )
-        label(
-          for=`todo-checkbox-${index}`
-          class="cursor-pointer"
-        )= todo.title
-      button.btn.btn-xs.btn-error(
-        data-on-click=`@delete("/todo/${index}")`
-      ) Delete
+      if edit === index
+        include todo-item-edit
+      else
+        include todo-item-view

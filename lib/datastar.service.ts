@@ -29,27 +29,46 @@ export type ViewEngine = 'pug' | 'handlebars' | 'hbs';
 export type ViewEngineModules = PugLike | HandlebarsLike;
 
 export interface TemplateRenderer {
-  compile(template: string): (context: Record<string, unknown>) => string;
+  compile(
+    template: string,
+    options?: Record<string, any>,
+  ): (context: Record<string, unknown>) => string;
+  compileFile(path: string): (context: Record<string, unknown>) => string;
 }
 
 interface PugLike {
-  compile(template: string): (context: Record<string, any>) => string;
+  compile(
+    template: string,
+    options?: Record<string, any>,
+  ): (context: Record<string, any>) => string;
+  compileFile(path: string): (context: Record<string, unknown>) => string;
 }
 
 export class PugRenderer implements TemplateRenderer {
   constructor(private pug: PugLike) {}
-  compile(template: string) {
-    return this.pug.compile(template);
+  compile(template: string, options?: Record<string, any>) {
+    return this.pug.compile(template, options);
+  }
+  compileFile(path: string) {
+    return this.pug.compileFile(path);
   }
 }
 
 interface HandlebarsLike {
-  compile(template: string): (context: Record<string, any>) => string;
+  compile(
+    template: string,
+    options?: Record<string, any>,
+  ): (context: Record<string, any>) => string;
+  compileFile(path: string): (context: Record<string, unknown>) => string;
 }
 
 export class HandlebarsRenderer implements TemplateRenderer {
   constructor(private hbs: HandlebarsLike) {}
-  compile(template: string) {
+  compile(template: string, options?: Record<string, any>) {
+    return this.hbs.compile(template, options);
+  }
+  compileFile(path: string) {
+    const template = fs.readFileSync(path, 'utf-8');
     return this.hbs.compile(template);
   }
 }
@@ -107,8 +126,12 @@ export class DatastarService {
     files.forEach((filePath) => {
       const rel = path.relative(root, filePath);
       const key = rel.replace(path.extname(rel), '');
-      const templateContent = fs.readFileSync(filePath, 'utf-8');
-      const compiledFn = this.renderer!.compile(templateContent);
+      //const templateContent = fs.readFileSync(filePath, 'utf-8');
+      // const compiledFn = this.renderer!.compile(templateContent, {
+      //   filename: key,
+      //   basedir: root,
+      // });
+      const compiledFn = this.renderer!.compileFile(filePath);
       this.templateCache.set(key, compiledFn);
       this.fileCache.set(filePath, key);
     });
