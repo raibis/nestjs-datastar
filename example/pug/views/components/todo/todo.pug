@@ -1,6 +1,6 @@
 #todo.card.bg-base-100.shadow-xl
   .card-body
-    h1.text-3xl.font-bold.text-center.mb-4 Todo App
+    h1.text-3xl.font-bold.text-center.mb-4 TODO PUG
 
     // Header with Add Input
     .flex.items-center.gap-3
@@ -43,7 +43,7 @@
       span.text-sm
         strong #{pendingCount || 0}
         |  items pending
-      .flex.gap-2
-        button.btn.btn-sm.btn-info(data-on-click="@put('mode/0')") All
-        button.btn.btn-sm(data-on-click="@put('mode/1')") Pending
-        button.btn.btn-sm(data-on-click="@put('mode/2')") Completed
+      .flex.gap-2(data-signals-mode="0")
+        button.btn.btn-sm(data-class-btn-info="$mode===0" data-on-click="@put('mode/0')") All
+        button.btn.btn-sm(data-class-btn-info="$mode===1" data-on-click="@put('mode/1')") Pending
+        button.btn.btn-sm(data-class-btn-info="$mode===2" data-on-click="@put('mode/2')") Completed

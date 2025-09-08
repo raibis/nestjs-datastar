@@ -13,34 +13,46 @@ import {
 import { Observable, Subject, startWith } from 'rxjs';
 import { GetDS, SignalsDS, DatastarService } from 'nestjs-datastar';
 
+enum Mode {
+  All = 0,
+  Active = 1,
+  Completed = 2,
+}
+
 @Controller()
 export class AppController {
   private updates$ = new Subject<MessageEvent>();
   private edit: number | undefined = undefined;
-  private mode = 0; // 0: all, 1: active, 2: completed
+  private mode = Mode.All;
   private todos = [
     { title: 'Learn NestJS', completed: false },
     { title: 'Learn Datastar', completed: false },
     { title: 'Build a Todo App', completed: false },
   ];
 
-  constructor(private readonly dataStarService: DatastarService) {}
+  constructor(private readonly DS: DatastarService) {}
 
   filteredTodos() {
-    if (this.mode === 1) {
+    if (this.mode === Mode.Active) {
       return this.todos.filter((todo) => !todo.completed);
-    } else if (this.mode === 2) {
+    } else if (this.mode === Mode.Completed) {
       return this.todos.filter((todo) => todo.completed);
     }
     return this.todos;
   }
 
   updateTodos() {
-    return this.dataStarService.patchElementsTemplate('components/todo/todo', {
+    return this.DS.patchElementsTemplate('components/todo/todo', {
       todos: this.filteredTodos(),
       edit: this.edit,
       pendingCount: this.pendingCount(),
     });
+  }
+
+  updateMode(signals: Record<string, any>) {
+    signals = signals || {};
+    signals.mode = this.mode;
+    return this.DS.patchSignals(JSON.stringify(signals));
   }
 
   pendingCount() {
@@ -65,6 +77,7 @@ export class AppController {
     if (index < 0) {
       this.todos.push({ title: String(signals?.input), completed: false });
     } else {
+      this.edit = undefined;
       this.todos[index] = { title: String(signals?.input), completed: false };
     }
     this.updates$.next(this.updateTodos());
@@ -105,8 +118,12 @@ export class AppController {
 
   @Put('mode/:mode')
   @HttpCode(204)
-  setMode(@Param('mode') mode: string): void {
+  setMode(
+    @Param('mode') mode: string,
+    @SignalsDS() signals: Record<string, any>,
+  ): void {
     this.mode = parseInt(mode, 10);
+    this.updates$.next(this.updateMode(signals));
     this.updates$.next(this.updateTodos());
   }
 }
