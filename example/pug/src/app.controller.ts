@@ -8,6 +8,7 @@ import {
   Delete,
   Patch,
   Post,
+  Put,
 } from '@nestjs/common';
 import { Observable, Subject, startWith } from 'rxjs';
 import { GetDS, SignalsDS, DatastarService } from 'nestjs-datastar';
@@ -24,11 +25,14 @@ export class AppController {
   constructor(private readonly DS: DatastarService) {}
 
   updateTodos(edit?: number) {
-    return this.DS.patchElementsTemplate('todos', { todos: this.todos, edit });
+    return this.DS.patchElementsTemplate('components/todo/todo', {
+      todos: this.todos,
+      edit,
+    });
   }
 
   @Get()
-  @Render('index')
+  @Render('layouts/base')
   index() {}
 
   @GetDS('updates')
@@ -73,5 +77,11 @@ export class AppController {
   @HttpCode(204)
   editTodo(@Param('index') index: string): void {
     this.updates$.next(this.updateTodos(Number(index)));
+  }
+
+  @Put('cancel')
+  @HttpCode(204)
+  cancelEdit(): void {
+    this.updates$.next(this.updateTodos());
   }
 }

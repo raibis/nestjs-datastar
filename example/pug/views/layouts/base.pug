@@ -1,0 +1,31 @@
+doctype html
+html(data-theme="light")
+  head
+    meta(charset="UTF-8")
+    meta(
+      name="viewport" 
+      content="width=device-width, initial-scale=1.0"
+    )
+    title DaisyUI Todo App
+    script(
+      type="module" 
+      src="https://cdn.jsdelivr.net/gh/starfederation/datastar@main/bundles/datastar.js"
+    )
+    link(
+      rel="stylesheet" 
+      href="https://cdn.jsdelivr.net/npm/daisyui@5" 
+      type="text/css"
+    )
+    script(src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4")
+    link(
+      rel="icon" 
+      type="image/x-icon" 
+      href="/favicon.ico"
+    )
+  body(class="min-h-screen bg-base-200 flex items-center justify-center p-6")
+    main(
+      class="w-full max-w-2xl"
+      data-on-load="@get('/updates')"
+    )
+      #todo.card.bg-base-100.shadow-xl
+        include ../components/todo/todo.pug

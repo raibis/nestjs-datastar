@@ -1,0 +1,51 @@
+#todo.card.bg-base-100.shadow-xl
+  .card-body
+    h1.text-3xl.font-bold.text-center.mb-4 Todo App
+
+    // Header with Add Input
+    .flex.items-center.gap-3
+      input(
+        id="toggle-all"
+        type="checkbox"
+        class="checkbox checkbox-primary"
+        data-on-click__prevent="@post('toggle/-1')"
+      )
+      if edit 
+        input(
+          id="new-todo"
+          class="input input-bordered w-full"
+          type="text"
+          placeholder="What needs to be done?"
+        )
+      else
+        input(
+          id="new-todo"
+          class="input input-bordered w-full"
+          type="text"
+          placeholder="What needs to be done?"
+          data-signals-input=""
+          data-bind="input"
+          data-on-keydown="evt.key === 'Enter' && $input.trim() && @patch('update/-1') && ($input = '');"
+        )
+    // Todo List
+    ul#todo-list.divide-y.divide-base-300.mt-4
+    each todo, index in todos || []
+      li.flex.items-center.justify-between.py-2(
+        data-on-dblclick=`evt.target === el && @get('todo/${index}')`
+      )
+        if edit === index
+          include ./todo-item-edit
+        else
+          include ./todo-item-view
+
+    // Footer Actions
+    .flex.items-center.justify-between.mt-4
+      span.text-sm
+        strong 0
+        |  items pending
+      .flex.gap-2
+        button.btn.btn-sm.btn-info(data-on-click="@put('/examples/todomvc/mode/0')") All
+        button.btn.btn-sm(data-on-click="@put('/examples/todomvc/mode/1')") Pending
+        button.btn.btn-sm(data-on-click="@put('/examples/todomvc/mode/2')") Completed
+        button.btn.btn-sm.btn-error(aria-disabled="true") Delete
+        button.btn.btn-sm.btn-warning(data-on-click="@put('/examples/todomvc/reset')") Reset

@@ -1,9 +1,0 @@
-ul#todo-list.divide-y.divide-base-300.mt-4
-  each todo, index in todos
-    li.flex.items-center.justify-between.py-2(
-      data-on-dblclick=`evt.target === el && @get('todo/${index}')`
-    )
-      if edit === index
-        include todo-item-edit
-      else
-        include todo-item-view

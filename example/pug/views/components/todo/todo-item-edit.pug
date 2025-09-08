@@ -2,12 +2,12 @@ input(
     id="edit-todo"
     type="text"
     data-signals-input=`'${todo.title}'`
-    data-bind-input
+    data-bind="input"
     data-on-load="el.focus()"
     data-on-blur="@put('cancel')"
     data-on-keydown=`if (evt.key === 'Escape'){
             el.blur();
         } else if (evt.key === 'Enter' && $input.trim()) {
-            @patch('update${index}');
+            @patch('update/${index}');
         }`
 )
