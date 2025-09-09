@@ -59,6 +59,7 @@ export class AppController {
     return this.todos.filter((todo) => !todo.completed).length;
   }
 
+  //Todo example /
   @Get()
   @Render('layouts/base')
   index() {}
@@ -127,7 +128,7 @@ export class AppController {
     this.updates$.next(this.updateTodos());
   }
 
-  //Basic example
+  //Basic example /basic
   @Get('basic')
   @Render('components/basic/index')
   root() {}

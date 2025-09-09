@@ -101,7 +101,7 @@ export class AppController {
       this.DS.patchElementsTemplate('merge', {
         word: 'World',
       }),
-      this.DS.patchSignals(JSON.stringify({ foo: `${signals.foo} world` })),
+      this.DS.patchSignals(JSON.stringify({ foo: `${signals.foo} World` })),
     ]);
   }
 }
