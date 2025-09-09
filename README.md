@@ -120,10 +120,8 @@ export class AppController {
 
 See the example projects in the `examples` folder:
 
-- **`http://localhost:3000`** — A simple todo app using Datastar and Pug.
+- **`http://localhost:3000`** — A simple todo app using Datastar, DaisyUI and Pug.
 - **`http://localhost:3000/basic`** — A basic example demonstrating Datastar with Pug.
-
-Details in the README file.
 
 # Module internals
 
