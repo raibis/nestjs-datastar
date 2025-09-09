@@ -121,13 +121,9 @@ See the example projects in the `examples` folder:
 
 Details in the README file.
 
-## Module internals
+## Decorators
 
-### Decorators
-
-#### Datastar backend actions
-
-Use these methods to enable sending server-sent events (SSE) to clients. The controller method should return an `Observable<MessageEvent>`.
+Use method decorators to enable sending server-sent events (SSE) to clients. The controller method should return an `Observable<MessageEvent>`.
 
 ```typescript
 export interface MessageEvent {
@@ -138,37 +134,35 @@ export interface MessageEvent {
 }
 ```
 
-##### `@GetDS(route: string)`
+### `@GetDS(route: string)`
 
-Decorator for mapping Datastar client `@get` actions to specific controller methods.
+Method decorator for mapping Datastar client `@get` actions to specific controller methods.
 
-##### `@PostDS(route: string)`
+### `@PostDS(route: string)`
 
-Decorator for mapping Datastar client `@post` actions to specific controller methods.
+Method decorator for mapping Datastar client `@post` actions to specific controller methods.
 
-##### `@PatchDS(route: string)`
+### `@PatchDS(route: string)`
 
-Decorator for mapping Datastar client `@patch` actions to specific controller methods.
+Method decorator for mapping Datastar client `@patch` actions to specific controller methods.
 
-##### `@PutDS(route: string)`
+### `@PutDS(route: string)`
 
-Decorator for mapping Datastar client `@put` actions to specific controller methods.
+Method decorator for mapping Datastar client `@put` actions to specific controller methods.
 
-##### `@DeleteDS(route: string)`
+### `@DeleteDS(route: string)`
 
-Decorator for mapping Datastar client `@delete` actions to specific controller methods.
+Method decorator for mapping Datastar client `@delete` actions to specific controller methods.
 
-#### Datastar signals
-
-##### `@SignalsDS()`
+### `@SignalsDS()`
 
 Controller method parameter decorator for accessing client request signals.
 
-### DatastarService methods
+## DatastarService methods
 
 Creates `MessageEvent` objects for sending to clients. All methods—except `patchElementsTemplate`—are taken from the [Datastar TypeScript SDK »](https://github.com/starfederation/datastar-typescript).
 
-#### `patchElementsTemplate(template, templateData, options?)`
+### `patchElementsTemplate(template, templateData, options?)`
 
 Renders HTML from a Pug template with the provided data and returns a `MessageEvent`. This is used to patch HTML into the client DOM.
 
@@ -186,7 +180,7 @@ Renders HTML from a Pug template with the provided data and returns a `MessageEv
 datastarService.patchElementsTemplate('template', { name: 'World' });
 ```
 
-#### `patchElements(elements, options?)`
+### `patchElements(elements, options?)`
 
 Patches HTML elements into the client DOM.
 
@@ -202,7 +196,7 @@ Patches HTML elements into the client DOM.
 datastarService.patchElements('<div id="myDiv">Updated content</div>');
 ```
 
-#### `removeElements(selector?, elements?, options?)`
+### `removeElements(selector?, elements?, options?)`
 
 Removes elements from the client DOM, either by CSS selector or by an HTML string containing element IDs.
 
@@ -224,7 +218,7 @@ datastarService.removeElements(
 );
 ```
 
-#### `removeSignals(signalKeys, options?)`
+### `removeSignals(signalKeys, options?)`
 
 Removes one or more signals from the client signal store.
 
@@ -243,7 +237,7 @@ datastarService.removeSignals('foo');
 datastarService.removeSignals(['foo', 'bar']);
 ```
 
-#### `executeScript(script, options?)`
+### `executeScript(script, options?)`
 
 Executes a script on the client by sending a `<script>` tag via server-sent events (SSE).
 
