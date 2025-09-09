@@ -7,42 +7,40 @@
 
 ## Description
 
-The `nestjs-datastar` is NestJS module adding toolset for integrating Datastar and template engine Pug for building reactive web applications.
+`nestjs-datastar` is a NestJS module that provides a toolset for integrating **Datastar** with the **Pug** template engine to build reactive web applications.
 
 ### Datastar
 
-Datastar is a lightweight framework for building everything from simple sites to real-time collaborative web applications.
+[Datastar](https://data-star.dev) is a lightweight framework for building everything from simple websites to real-time collaborative applications.
 
 Read the [Getting Started Guide »](https://data-star.dev/guide/getting_started)
 
 #### Latest Datastar client script
 
-[Datastar github repo »](https://data-star.dev/guide/getting_started)
+Available in the [Datastar GitHub Repository »](https://github.com/starfederation/datastar)
 
 ### Pug
 
-Pug is a high-performance template engine.
+[Pug](https://pugjs.org) is a high-performance template engine for Node.js.
 
-Read the [Getting Started Guide »](https://github.com/starfederation/datastar)
+Read the [Getting Started Guide »](https://pugjs.org/api/getting-started.html)
 
 ## Quick Start
 
 ### Installation
 
 ```bash
-npm i nestjs-datastar
-npm i pug
+npm install nestjs-datastar
+npm install pug
 ```
 
 ### Configuration
 
-Options:
+**Options:**
 
-`baseViewDir` - Glob pattern for locating pug templates. (e.g. 'views/\*_/_.pug')
-
-`viewEngine` - Current version support `pug` template engine.
-
-`isDevelopment` - Enable development mode. When enabled module watches for template file changes, compiles and reloads them automatically.
+- **`baseViewDir`** — Glob pattern for locating Pug templates (e.g., `views/**/*/_.pug`).
+- **`viewEngine`** — The template engine to use. Currently, only `pug` is supported.
+- **`isDevelopment`** — Enables development mode. When enabled, the module watches for template file changes, recompiles them, and reloads automatically.
 
 ```typescript
 import { Module } from '@nestjs/common';
@@ -64,7 +62,7 @@ export class AppModule {}
 
 ### Basic Usage
 
-Here's a simple example that reads clients signals, patches elements and signals.
+Here’s a simple example that reads client signals, updates both elements and signals, and executes a script.
 
 ```pug
 // views/index.pug
@@ -91,12 +89,12 @@ import { PostDS, SignalsDS, DatastarService } from 'nestjs-datastar';
 export class AppController {
   constructor(private readonly DS: DatastarService) {}
 
-  // Rendering initial HTML from Pug template
+  // Render the initial HTML from a Pug template
   @Get()
   @Render('index')
   root() {}
 
-  // Handling @post('/merge') request from Datastar client
+  // Handle the @post('/merge') request from the Datastar client
   @PostDS('merge')
   updateClient(
     @SignalsDS() signals: Record<string, any>,
@@ -114,10 +112,10 @@ export class AppController {
 
 ## Examples
 
-See example projects in the `examples` folder.
+See the example projects in the `examples` folder:
 
-- `localhost:3000` - Simple todo app with Datastar and Pug.
-- `localhost:3000/basic` - Basic example with Datastar and Pug.
+- **`http://localhost:3000`** — A simple todo app using Datastar and Pug.
+- **`http://localhost:3000/basic`** — A basic example demonstrating Datastar with Pug.
 
 Details in the README file.
 
@@ -127,7 +125,7 @@ Details in the README file.
 
 #### Datastar backend actions
 
-Use thease methods to enable posibility send server-sent events to clients. Controller method should return `Observable<MessageEvent>`.
+Use these methods to enable sending server-sent events (SSE) to clients. The controller method should return an `Observable<MessageEvent>`.
 
 ```typescript
 export interface MessageEvent {
@@ -140,54 +138,49 @@ export interface MessageEvent {
 
 ##### `@GetDS(route: string)`
 
-Decorator for mapping clients datastar `@get` backend action to specific controller methods.
+Decorator for mapping Datastar client `@get` actions to specific controller methods.
 
 ##### `@PostDS(route: string)`
 
-Decorator for mapping clients datastar `@post` backend actions to specific controller methods.
+Decorator for mapping Datastar client `@post` actions to specific controller methods.
 
 ##### `@PatchDS(route: string)`
 
-Decorator for mapping clients datastar `@patch` backend actions to specific controller methods.
+Decorator for mapping Datastar client `@patch` actions to specific controller methods.
 
 ##### `@PutDS(route: string)`
 
-Decorator for mapping clients datastar `@put` backend actions to specific controller methods.
+Decorator for mapping Datastar client `@put` actions to specific controller methods.
 
 ##### `@DeleteDS(route: string)`
 
-Decorator for mapping clients datastar `@delete` backend actions to specific controller methods.
+Decorator for mapping Datastar client `@delete` actions to specific controller methods.
 
 #### Datastar signals
 
 ##### `@SignalsDS()`
 
-Controller method parameter decorator for reading client request signals.
+Controller method parameter decorator for accessing client request signals.
 
 ### DatastarService methods
 
-Creates `MessageEvent` objects for sending to clients. All methods except `patchElementsTemplate` are taken from [Datastar TypeScript SDK »](https://github.com/starfederation/datastar-typescript)
+Creates `MessageEvent` objects for sending to clients. All methods—except `patchElementsTemplate`—are taken from the [Datastar TypeScript SDK »](https://github.com/starfederation/datastar-typescript).
 
 #### `patchElementsTemplate(template, templateData, options?)`
 
-Renders html from pug template with provided data and returns `MessageEvent`. Used to patch html into the client DOM.
+Renders HTML from a Pug template with the provided data and returns a `MessageEvent`. This is used to patch HTML into the client DOM.
 
 **Parameters:**
 
-- `template` - relative path to pug template. Eg if `baseViewDir` is `views/**/*.pug` and template is located at `views/partials/template.pug` then `template` parameter should be `partials/template`.
-- `templateData` - data object for pug template.
-- `options` - optional object with additional options.
-  - `options.replace?: boolean` - when true, replaces element instead of merging. Default is false (merging).
+- **`template`** — Relative path to the Pug template.  
+  For example, if `baseViewDir` is `views/**/*.pug` and the template is located at `views/partials/template.pug`, then the `template` parameter should be `partials/template`.
+- **`templateData`** — Data object to pass to the Pug template.
+- **`options`** — Optional object with additional settings:
+  - **`mode`** — Patch mode. Possible values: `"outer"`, `"inner"`, `"replace"`, `"prepend"`, `"append"`, `"before"`, `"after"`, `"remove"`.
+  - **`selector`** — CSS selector for targeting elements (required for some modes).
+  - **`useViewTransition`** — Whether to use the View Transition API.
 
-**Options:**
-
-- `mode`: Patch mode - "outer", "inner", "replace", "prepend", "append", "before", "after", "remove"
-- `selector`: CSS selector for targeting elements (required for some modes)
-- `useViewTransition`: Whether to use View Transition API
-
-**Example:**
-
-```javascript
+```typescript
 datastarService.patchElementsTemplate('template', { name: 'World' });
 ```
 
@@ -197,34 +190,29 @@ Patches HTML elements into the client DOM.
 
 **Parameters:**
 
-- `elements`: HTML string containing elements to patch
-- `options`: Optional configuration object with `mode` and `selector`
+- **`elements`** — HTML string containing the elements to patch.
+- **`options`** — Optional configuration:
+  - **`mode`** — Patch mode. Possible values: `"outer"`, `"inner"`, `"replace"`, `"prepend"`, `"append"`, `"before"`, `"after"`, `"remove"`.
+  - **`selector`** — CSS selector for targeting elements (required for some modes).
+  - **`useViewTransition`** — Whether to use the View Transition API.
 
-**Options:**
-
-- `mode`: Patch mode - "outer", "inner", "replace", "prepend", "append", "before", "after", "remove"
-- `selector`: CSS selector for targeting elements (required for some modes)
-- `useViewTransition`: Whether to use View Transition API
-
-**Example:**
-
-```javascript
+```typescript
 datastarService.patchElements('<div id="myDiv">Updated content</div>');
 ```
 
 #### `removeElements(selector?, elements?, options?)`
 
-Removes elements from the client DOM by selector or by HTML string with IDs.
+Removes elements from the client DOM, either by CSS selector or by an HTML string containing element IDs.
 
 **Parameters:**
 
-- `selector`: CSS selector for elements to remove (optional; mutually exclusive with elements)
-- `elements`: HTML string of elements with IDs to remove (optional; required if selector is not provided)
-- `options`: Optional configuration object with `eventId`, `retryDuration`
+- **`selector`** — CSS selector for elements to remove (optional; mutually exclusive with `elements`).
+- **`elements`** — HTML string of elements with IDs to remove (optional; required if `selector` is not provided).
+- **`options`** — Optional configuration object with the following properties:
+  - **`eventId`** — ID of the event to associate with this removal.
+  - **`retryDuration`** — Duration to retry the removal if it fails.
 
-**Examples:**
-
-```javascript
+```typescript
 // Remove by selector
 datastarService.removeElements('#feed, #otherid');
 // Remove by HTML elements with IDs
@@ -240,12 +228,13 @@ Removes one or more signals from the client signal store.
 
 **Parameters:**
 
-- `signalKeys`: The signal key or array of keys to remove
-- `options`: Optional configuration object with `onlyIfMissing`, `eventId`, `retryDuration`
+- **`signalKeys`** — The signal key, or an array of keys, to remove.
+- **`options`** — Optional configuration object with the following properties:
+  - **`onlyIfMissing`** — Remove the signal only if it is missing on the client.
+  - **`eventId`** — ID of the event associated with this removal.
+  - **`retryDuration`** — Duration to retry the removal if it fails.
 
-**Examples:**
-
-```javascript
+```typescript
 // Remove a single signal
 datastarService.removeSignals('foo');
 // Remove multiple signals
@@ -254,19 +243,18 @@ datastarService.removeSignals(['foo', 'bar']);
 
 #### `executeScript(script, options?)`
 
-Executes a script on the client by sending a `<script>` tag via SSE.
+Executes a script on the client by sending a `<script>` tag via server-sent events (SSE).
 
 **Parameters:**
 
-- `script`: The JavaScript code to execute
-- `options`: Optional configuration object:
-  - `autoRemove`: If true (default), adds data-effect="el.remove()" to the script tag
-  - `attributes`: Object of script tag attributes (preferred)
-  - `eventId`, `retryDuration`
+- **`script`** — The JavaScript code to execute.
+- **`options`** — Optional configuration object:
+  - **`autoRemove`** — If `true` (default), adds `data-effect="el.remove()"` to the script tag.
+  - **`attributes`** — Object containing attributes for the `<script>` tag (preferred).
+  - **`eventId`** — ID of the event associated with this script.
+  - **`retryDuration`** — Duration to retry execution if it fails.
 
-**Examples:**
-
-```javascript
+```typescript
 // Execute a simple script
 datastarService.executeScript('console.log("Hello from server!")');
 

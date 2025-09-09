@@ -1,15 +1,17 @@
-# Nest Datastar PUG Example
+# Nest Datastar Examples
 
-In root of the project run:
+## Setup
+
+From the root of the project, run:
 
 ```bash
-npm i pug
+npm install pug
 npm run build
 ```
 
-in example folder run:
+Then, inside the `example` folder, run:
 
 ```bash
-npm i
+npm install
 npm run start:debug
 ```
