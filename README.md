@@ -7,7 +7,11 @@
 
 ## Description
 
-`nestjs-datastar` is a NestJS module that provides a toolset for integrating **Datastar** with the **Pug** template engine to build reactive web applications.
+`nestjs-datastar` is a **NestJS** module that provides a toolset for integrating **Datastar** with the **Pug** template engine to build reactive web applications.
+
+### NestJS
+
+[NestJS](https://nestjs.com) is a progressive Node.js framework for building efficient, reliable, and scalable server-side applications.
 
 ### Datastar
 
@@ -120,6 +124,8 @@ See the example projects in the `examples` folder:
 - **`http://localhost:3000/basic`** — A basic example demonstrating Datastar with Pug.
 
 Details in the README file.
+
+# Module internals
 
 ## Decorators
 
