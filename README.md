@@ -19,9 +19,7 @@
 
 Read the [Getting Started Guide »](https://data-star.dev/guide/getting_started)
 
-#### Latest Datastar client script
-
-Available in the [Datastar GitHub Repository »](https://github.com/starfederation/datastar)
+Latest Datastar client script available in the [Datastar GitHub Repository »](https://github.com/starfederation/datastar)
 
 ### Pug
 
