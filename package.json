@@ -1,11 +1,10 @@
 {
   "name": "nestjs-datastar",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A NestJS module for integrating Datastar into your applications.",
-  "author": "Audrius Raibis",
+  "author": "audrius.raibis@gmail.com",
   "private": false,
   "license": "MIT",
-  "url": "https://github.com/raibis/nestjs-datastar#readme",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -17,6 +16,17 @@
     "lint": "eslint 'lib/**/*.ts' --fix",
     "prepublish:npm": "npm run build"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raibis/nestjs-datastar.git"
+  },
+  "keywords": [
+    "nest",
+    "nestjs",
+    "datastar",
+    "pug"
+  ],
+  "homepage": "https://github.com/raibis/nestjs-datastar#readme",
   "dependencies": {
     "chokidar": "^4.0.3",
     "glob": "^11.0.3"
