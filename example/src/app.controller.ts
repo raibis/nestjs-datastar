@@ -142,6 +142,7 @@ export class AppController {
         word: 'World',
       }),
       this.DS.patchSignals(JSON.stringify({ foo: `${signals.foo} World` })),
+      this.DS.executeScript('console.log("Hello World from server!")'),
     ]);
   }
 }
