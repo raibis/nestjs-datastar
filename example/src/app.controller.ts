@@ -10,8 +10,8 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { Observable, Subject, startWith } from 'rxjs';
-import { GetDS, SignalsDS, DatastarService } from 'nestjs-datastar';
+import { Observable, Subject, startWith, from } from 'rxjs';
+import { DatastarService, GetDS, PostDS, SignalsDS } from 'nestjs-datastar';
 
 enum Mode {
   All = 0,
@@ -125,5 +125,22 @@ export class AppController {
     this.mode = parseInt(mode, 10);
     this.updates$.next(this.updateMode(signals));
     this.updates$.next(this.updateTodos());
+  }
+
+  //Basic example
+  @Get('basic')
+  @Render('components/basic/index')
+  root() {}
+
+  @PostDS('basic/merge')
+  updateClient(
+    @SignalsDS() signals: Record<string, any>,
+  ): Observable<MessageEvent> {
+    return from([
+      this.DS.patchElementsTemplate('components/basic/merge', {
+        word: 'World',
+      }),
+      this.DS.patchSignals(JSON.stringify({ foo: `${signals.foo} World` })),
+    ]);
   }
 }

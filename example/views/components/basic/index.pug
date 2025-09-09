@@ -1,0 +1,6 @@
+html
+    head
+        script(type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@main/bundles/datastar.js")
+    body
+        #toMerge(data-signals-foo="'Hello'" data-on-load="@post('/basic/merge')") Hello
+        div(data-text="$foo")

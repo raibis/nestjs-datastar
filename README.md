@@ -85,7 +85,7 @@ import { PostDS, SignalsDS, DatastarService } from 'nestjs-datastar';
 
 @Controller()
 export class AppController {
-  constructor(private readonly datastarService: DatastarService) {}
+  constructor(private readonly DS: DatastarService) {}
 
   // Rendering initial HTML from Pug template
   @Get()
@@ -98,12 +98,10 @@ export class AppController {
     @SignalsDS() signals: Record<string, any>,
   ): Observable<MessageEvent> {
     return from([
-      this.datastarService.patchElementsTemplate('merge', {
+      this.DS.patchElementsTemplate('merge', {
         word: 'World',
       }),
-      this.datastarService.patchSignals(
-        JSON.stringify({ foo: `${signals.foo} world` }),
-      ),
+      this.DS.patchSignals(JSON.stringify({ foo: `${signals.foo} world` })),
     ]);
   }
 }
