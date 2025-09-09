@@ -25,6 +25,8 @@ Available in the [Datastar GitHub Repository »](https://github.com/starfederati
 
 Read the [Getting Started Guide »](https://pugjs.org/api/getting-started.html)
 
+Nice tutorial [Pug Tutorial for Beginners »](https://www.youtube.com/watch?v=kt3cEjjkCZA&t=92s)
+
 ## Quick Start
 
 ### Installation
