@@ -7,7 +7,10 @@ export interface DatastarModuleOptions {
   isDevelopment?: boolean;
 }
 
-@Module({})
+@Module({
+  providers: [DatastarService],
+  exports: [DatastarService],
+})
 export class DatastarModule {
   static forRoot(options: DatastarModuleOptions): DynamicModule {
     return {
