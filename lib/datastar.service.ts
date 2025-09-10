@@ -1,4 +1,4 @@
-import { Inject, Injectable, MessageEvent, Logger } from '@nestjs/common';
+import { Injectable, MessageEvent, Logger } from '@nestjs/common';
 import { DatastarModuleOptions } from './datastar.module';
 import * as path from 'path';
 import { glob } from 'glob';
@@ -22,7 +22,6 @@ import {
   DefaultSseRetryDurationMs,
   ElementPatchModes,
 } from './datastar.constant';
-import { Console } from 'console';
 
 export type ViewEngine = 'pug';
 
@@ -45,15 +44,21 @@ export class PugRenderer implements TemplateRenderer {
 
 @Injectable()
 export class DatastarService {
+  private readonly baseViewDir: string;
+  private readonly viewEngine: string;
+  private readonly isDevelopment: boolean;
   private readonly logger = new Logger(DatastarService.name);
   private renderer: TemplateRenderer | null = null;
   private templateCache: Map<string, (context: Record<string, any>) => string> =
     new Map();
   private fileCache: Map<string, string> = new Map();
 
-  constructor(
-    @Inject('DATASTAR_OPTIONS') private options: DatastarModuleOptions,
-  ) {}
+  constructor(private options: DatastarModuleOptions) {
+    this.baseViewDir = options.baseViewDir || 'views/**/*.pug';
+    this.viewEngine = options.viewEngine || 'pug';
+    this.isDevelopment =
+      options.isDevelopment !== undefined ? options.isDevelopment : true;
+  }
 
   public async onModuleInit(): Promise<void> {
     await this.loadEngine();
@@ -65,8 +70,8 @@ export class DatastarService {
 
   private async loadEngine(): Promise<void> {
     try {
-      const mod = (await import(this.options.viewEngine)) as ViewEngineModules;
-      switch (this.options.viewEngine) {
+      const mod = (await import(this.viewEngine)) as ViewEngineModules;
+      switch (this.viewEngine) {
         case 'pug':
           this.renderer = new PugRenderer(mod);
           break;
@@ -89,9 +94,9 @@ export class DatastarService {
       throw new Error('Renderer not initialized');
     }
     const cwd = process.cwd();
-    const pattern = path.resolve(cwd, this.options.baseViewDir);
+    const pattern = path.resolve(cwd, this.baseViewDir);
     const files = glob.sync(pattern);
-    const root = path.resolve(cwd, this.options.baseViewDir.split('/**')[0]);
+    const root = path.resolve(cwd, this.baseViewDir.split('/**')[0]);
     for (const filePath of files) {
       const rel = path.relative(root, filePath);
       const key = rel.replace(path.extname(rel), '');
@@ -119,7 +124,7 @@ export class DatastarService {
   private watchTemplates(): void {
     const templateRoot = path.resolve(
       process.cwd(),
-      this.options.baseViewDir.split('/**')[0],
+      this.baseViewDir.split('/**')[0],
     );
     const watcher = chokidar.watch(templateRoot, {
       persistent: true,
@@ -146,10 +151,7 @@ export class DatastarService {
     if (!compiledFn) {
       return;
     }
-    const root = path.resolve(
-      process.cwd(),
-      this.options.baseViewDir.split('/**')[0],
-    );
+    const root = path.resolve(process.cwd(), this.baseViewDir.split('/**')[0]);
     const rel = path.relative(root, filePath);
     const key = rel.replace(path.extname(rel), '');
     this.templateCache.set(key, compiledFn);

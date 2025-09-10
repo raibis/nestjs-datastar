@@ -42,7 +42,7 @@ npm install pug
 
 **Options:**
 
-- **`baseViewDir`** — Glob pattern for locating Pug templates (e.g., `views/**/*/_.pug`).
+- **`baseViewDir`** — Glob pattern for locating Pug templates (e.g., `views/**/*.pug`).
 - **`viewEngine`** — The template engine to use. Currently, only `pug` is supported.
 - **`isDevelopment`** — Enables development mode. When enabled, the module watches for template file changes, recompiles them, and reloads automatically.
 
