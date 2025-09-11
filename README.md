@@ -56,6 +56,7 @@ import { DatastarModule } from 'nestjs-datastar';
       baseViewDir: 'views/**/*.pug',
       viewEngine: 'pug',
       isDevelopment: true,
+      global: true,
     }),
   ],
   controllers: [AppController],
