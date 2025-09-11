@@ -27,8 +27,6 @@ Latest Datastar client script available in the [Datastar GitHub Repository »](h
 
 Read the [Getting Started Guide »](https://pugjs.org/api/getting-started.html)
 
-Nice tutorial [Pug Tutorial for Beginners »](https://www.youtube.com/watch?v=kt3cEjjkCZA&t=92s)
-
 ## Quick Start
 
 ### Installation
@@ -43,8 +41,9 @@ npm install pug
 **Options:**
 
 - **`baseViewDir`** — Glob pattern for locating Pug templates (e.g., `views/**/*.pug`).
-- **`viewEngine`** — The template engine to use. Currently, only `pug` is supported.
-- **`isDevelopment`** — Enables development mode. When enabled, the module watches for template file changes, recompiles them, and reloads automatically.
+- **`viewEngine?`** — The template engine to use. Currently, only `pug` is supported. Defaults to `pug`.
+- **`isDevelopment?`** — Enables development mode. When enabled, the module watches for template file changes, recompiles them, and reloads automatically. Defaults to `true`.
+- **`global?`** — Registers module as global. Defaults to `true`.
 
 ```typescript
 import { Module } from '@nestjs/common';

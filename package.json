@@ -1,6 +1,6 @@
 {
   "name": "nestjs-datastar",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "A NestJS module for integrating Datastar into your applications.",
   "author": "audrius.raibis@gmail.com",
   "private": false,

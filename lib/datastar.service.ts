@@ -23,16 +23,22 @@ import {
   ElementPatchModes,
 } from './datastar.constant';
 
+interface DatastarServiceOptions {
+  baseViewDir: string;
+  viewEngine: string;
+  isDevelopment: boolean;
+}
+
 export type ViewEngine = 'pug';
+
+interface PugLike {
+  compileFile(filePath: string): (context: Record<string, unknown>) => string;
+}
 
 export type ViewEngineModules = PugLike;
 
 export interface TemplateRenderer {
   compileFile(path: string): (context: Record<string, unknown>) => string;
-}
-
-interface PugLike {
-  compileFile(filePath: string): (context: Record<string, unknown>) => string;
 }
 
 export class PugRenderer implements TemplateRenderer {
@@ -44,20 +50,19 @@ export class PugRenderer implements TemplateRenderer {
 
 @Injectable()
 export class DatastarService {
-  private readonly baseViewDir: string;
-  private readonly viewEngine: string;
-  private readonly isDevelopment: boolean;
+  private readonly options: DatastarServiceOptions;
   private readonly logger = new Logger(DatastarService.name);
   private renderer: TemplateRenderer | null = null;
   private templateCache: Map<string, (context: Record<string, any>) => string> =
     new Map();
   private fileCache: Map<string, string> = new Map();
 
-  constructor(private options: DatastarModuleOptions) {
-    this.baseViewDir = options.baseViewDir || 'views/**/*.pug';
-    this.viewEngine = options.viewEngine || 'pug';
-    this.isDevelopment =
-      options.isDevelopment !== undefined ? options.isDevelopment : true;
+  constructor(options: DatastarModuleOptions) {
+    this.options = {
+      baseViewDir: options.baseViewDir,
+      viewEngine: options.viewEngine ?? 'pug',
+      isDevelopment: options.isDevelopment ?? true,
+    };
   }
 
   public async onModuleInit(): Promise<void> {
@@ -70,17 +75,16 @@ export class DatastarService {
 
   private async loadEngine(): Promise<void> {
     try {
-      const mod = (await import(this.viewEngine)) as ViewEngineModules;
-      switch (this.viewEngine) {
+      const mod = (await import(this.options.viewEngine)) as ViewEngineModules;
+      switch (this.options.viewEngine) {
         case 'pug':
           this.renderer = new PugRenderer(mod);
           break;
         default:
           throw new Error(`Unsupported template engine`);
       }
-    } catch (err: any) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (err?.code === 'MODULE_NOT_FOUND') {
+    } catch (err: unknown) {
+      if ((err as { code?: string })?.code === 'MODULE_NOT_FOUND') {
         throw new Error(
           `View engine ${this.options.viewEngine} not found. Install it via npm.`,
         );
@@ -94,9 +98,9 @@ export class DatastarService {
       throw new Error('Renderer not initialized');
     }
     const cwd = process.cwd();
-    const pattern = path.resolve(cwd, this.baseViewDir);
+    const pattern = path.resolve(cwd, this.options.baseViewDir);
     const files = glob.sync(pattern);
-    const root = path.resolve(cwd, this.baseViewDir.split('/**')[0]);
+    const root = path.resolve(cwd, this.options.baseViewDir.split('/**')[0]);
     for (const filePath of files) {
       const rel = path.relative(root, filePath);
       const key = rel.replace(path.extname(rel), '');
@@ -124,7 +128,7 @@ export class DatastarService {
   private watchTemplates(): void {
     const templateRoot = path.resolve(
       process.cwd(),
-      this.baseViewDir.split('/**')[0],
+      this.options.baseViewDir.split('/**')[0],
     );
     const watcher = chokidar.watch(templateRoot, {
       persistent: true,
@@ -151,7 +155,10 @@ export class DatastarService {
     if (!compiledFn) {
       return;
     }
-    const root = path.resolve(process.cwd(), this.baseViewDir.split('/**')[0]);
+    const root = path.resolve(
+      process.cwd(),
+      this.options.baseViewDir.split('/**')[0],
+    );
     const rel = path.relative(root, filePath);
     const key = rel.replace(path.extname(rel), '');
     this.templateCache.set(key, compiledFn);
